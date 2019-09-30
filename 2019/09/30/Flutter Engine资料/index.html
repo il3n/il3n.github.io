@@ -13,7 +13,7 @@
 <meta property="og:site_name">
 <meta property="og:description" content="编译flutter engine，参考链接  1). https://fucknmb.com/2019/02/26/Flutter-Engine-%E7%BC%96%E8%AF%91%E6%8C%87%E5%8C%97/ 2). http://zhengxiaoyong.com/2019/03/16/Flutter-Engine%E4%B8%8ESDK%E7%9A%84%E5%AE%9A%E5%">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-09-30T07:11:42.426Z">
+<meta property="og:updated_time" content="2019-09-30T07:13:11.741Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Flutter Engine 资料">
 <meta name="twitter:description" content="编译flutter engine，参考链接  1). https://fucknmb.com/2019/02/26/Flutter-Engine-%E7%BC%96%E8%AF%91%E6%8C%87%E5%8C%97/ 2). http://zhengxiaoyong.com/2019/03/16/Flutter-Engine%E4%B8%8ESDK%E7%9A%84%E5%AE%9A%E5%">
@@ -173,7 +173,7 @@
 </li>
 <li><p>最佳实践</p>
 <ul>
-<li><p>1). 配置depot_tools工具<br><code>git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git</code>，然后将<code>depot_tools</code>加入环境变量<code>export PATH=&quot;$PATH:~/Flutter/depot_tools&quot;</code></p>
+<li><p>1). 配置depot_tools工具<br><code>git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git</code>，<br>然后将<code>depot_tools</code>加入环境变量<code>export PATH=&quot;$PATH:~/Flutter/depot_tools&quot;</code></p>
 </li>
 <li><p>2). 本地创建名为<code>engine</code>的文件夹，并在<code>engine</code>内创建<code>.gclient</code>文件，内容如下，将url改为自己的<code>engine</code>地址</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">  solutions = [&#123;</span><br><span class="line">  "managed": False,</span><br><span class="line">  "name": "src/flutter",</span><br><span class="line">  "url": "git@github.com:&lt;your_name_here&gt;/engine.git",</span><br><span class="line">  "custom_deps": &#123;&#125;,</span><br><span class="line">  "deps_file": "DEPS",</span><br><span class="line">  "safesync_url": "",</span><br><span class="line">&#125;,]</span><br></pre></td></tr></table></figure>
