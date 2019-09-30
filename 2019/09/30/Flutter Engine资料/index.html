@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang=en>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="编译flutter engine，参考链接  1). https://fucknmb.com/2019/02/26/Flutter-Engine-%E7%BC%96%E8%AF%91%E6%8C%87%E5%8C%97/ 2). http://zhengxiaoyong.com/2019/03/16/Flutter-Engine%E4%B8%8ESDK%E7%9A%84%E5%AE%9A%E5%">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flutter Engine 资料">
+<meta property="og:url" content="http://yoursite.com/2019/09/30/Flutter Engine资料/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="编译flutter engine，参考链接  1). https://fucknmb.com/2019/02/26/Flutter-Engine-%E7%BC%96%E8%AF%91%E6%8C%87%E5%8C%97/ 2). http://zhengxiaoyong.com/2019/03/16/Flutter-Engine%E4%B8%8ESDK%E7%9A%84%E5%AE%9A%E5%">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-09-30T07:04:12.723Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Flutter Engine 资料">
+<meta name="twitter:description" content="编译flutter engine，参考链接  1). https://fucknmb.com/2019/02/26/Flutter-Engine-%E7%BC%96%E8%AF%91%E6%8C%87%E5%8C%97/ 2). http://zhengxiaoyong.com/2019/03/16/Flutter-Engine%E4%B8%8ESDK%E7%9A%84%E5%AE%9A%E5%">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>Flutter Engine 资料</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- persian styles -->
+    
+      <link rel="stylesheet" href="/css/rtl.css">
+    
+    <!-- rss -->
+    
+    
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" href="/2019/09/29/cocoapods_usage/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/09/30/Flutter Engine资料/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/09/30/Flutter Engine资料/&text=Flutter Engine 资料"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/09/30/Flutter Engine资料/&title=Flutter Engine 资料"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/09/30/Flutter Engine资料/&is_video=false&description=Flutter Engine 资料"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Flutter Engine 资料&body=Check out this article: http://yoursite.com/2019/09/30/Flutter Engine资料/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/09/30/Flutter Engine资料/&title=Flutter Engine 资料"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/09/30/Flutter Engine资料/&title=Flutter Engine 资料"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/09/30/Flutter Engine资料/&title=Flutter Engine 资料"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/09/30/Flutter Engine资料/&title=Flutter Engine 资料"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/09/30/Flutter Engine资料/&name=Flutter Engine 资料&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Flutter Engine 资料
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name"></span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2019-09-30T07:02:50.751Z" itemprop="datePublished">2019-09-30</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <ol>
+<li><p>编译flutter engine，参考链接</p>
+<ul>
+<li><strong>1).</strong> <a href="https://fucknmb.com/2019/02/26/Flutter-Engine-%E7%BC%96%E8%AF%91%E6%8C%87%E5%8C%97/" target="_blank" rel="noopener">https://fucknmb.com/2019/02/26/Flutter-Engine-%E7%BC%96%E8%AF%91%E6%8C%87%E5%8C%97/</a></li>
+<li><strong>2).</strong> <a href="http://zhengxiaoyong.com/2019/03/16/Flutter-Engine%E4%B8%8ESDK%E7%9A%84%E5%AE%9A%E5%88%B6%E5%8C%96%E4%B8%8E%E7%BC%96%E8%AF%91/" target="_blank" rel="noopener">http://zhengxiaoyong.com/2019/03/16/Flutter-Engine%E4%B8%8ESDK%E7%9A%84%E5%AE%9A%E5%88%B6%E5%8C%96%E4%B8%8E%E7%BC%96%E8%AF%91/</a></li>
+<li><strong>3).</strong> <a href="https://www.jianshu.com/p/6519ed563fcc" target="_blank" rel="noopener">https://www.jianshu.com/p/6519ed563fcc</a></li>
+<li>4). <a href="https://github.com/Natoto/flutterOnExistApp/wiki/%E5%B8%B8%E7%94%A8%E7%BC%96%E8%AF%91%E5%91%BD%E4%BB%A4" target="_blank" rel="noopener">https://github.com/Natoto/flutterOnExistApp/wiki/%E5%B8%B8%E7%94%A8%E7%BC%96%E8%AF%91%E5%91%BD%E4%BB%A4</a></li>
+<li>5). <a href="https://www.stephenw.cc/2018/05/14/flutter-principle/" target="_blank" rel="noopener">https://www.stephenw.cc/2018/05/14/flutter-principle/</a></li>
+<li>6). <a href="https://github.com/flutter/flutter/wiki/Setting-up-the-Engine-development-environment" target="_blank" rel="noopener">https://github.com/flutter/flutter/wiki/Setting-up-the-Engine-development-environment</a></li>
+<li>7). <a href="https://github.com/cquery-project/cquery/wiki/Visual-Studio-Code#setting-up-the-extension" target="_blank" rel="noopener">https://github.com/cquery-project/cquery/wiki/Visual-Studio-Code#setting-up-the-extension</a></li>
+<li>8). <a href="https://github.com/flutter/flutter/wiki/Compiling-the-engine" target="_blank" rel="noopener">https://github.com/flutter/flutter/wiki/Compiling-the-engine</a></li>
+<li>9). <a href="https://github.com/flutter/flutter/wiki/Flutter%27s-modes" target="_blank" rel="noopener">https://github.com/flutter/flutter/wiki/Flutter%27s-modes</a></li>
+<li>10). <a href="https://github.com/flutter/flutter/wiki/The-flutter-tool" target="_blank" rel="noopener">https://github.com/flutter/flutter/wiki/The-flutter-tool</a></li>
+</ul>
+</li>
+<li><p>flutter’s modes<br></p>
+<ul>
+<li>1). Debug     used by <code>flutter run</code> build with <code>sky/tools/gn --android</code> or <code>sky/tools/gn --ios</code><br></li>
+<li>2). Release used by <code>flutter run --release</code> build with <code>sky/tools/gn --android --runtime-mode=release</code> or <code>sky/tools/gn --ios --runtime-mode=release</code><br></li>
+<li>3). Profile used by <code>flutter run --profile</code> build with <code>sky/tools/gn --android --runtime-mode=profile</code> or <code>sky/tools/gn --ios --runtime-mode=profile</code><br></li>
+<li>4). Headless test used by <code>flutter test</code> build with <code>sky/tools/gn</code><br></li>
+</ul>
+</li>
+<li><p>Compile the engine (在src目录下执行下面的步骤)</p>
+<ul>
+<li>1). <code>git pull upstream master</code> in <code>src/flutter</code> to update the Flutter Engine repo.</li>
+<li>2). <code>gclient sync</code> to update dependencies.</li>
+<li>3). Prepare build files<ul>
+<li><code>./flutter/tools/gn --ios --unoptimized</code> to prepare build files for device-side executables (or <code>--ios --simulator --unoptimized</code> for simulator).</li>
+<li>This also produces an Xcode project for working with the engine source code at <code>out/ios_debug_unopt</code></li>
+</ul>
+</li>
+<li>4). <code>./flutter/tools/gn --unoptimized</code> to propare the build files for host-side executables.</li>
+<li>5). ‘ninja -C out/ios_debug_unopt &amp;&amp; ninja -C out/host_debug_unopt’ to build all artifacts(use <code>out/ios_debug_sim_unopt</code> for Simulator).</li>
+</ul>
+</li>
+<li><p>最佳实践</p>
+<ul>
+<li><p>1). 配置depot_tools工具<br><code>git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git</code>，然后将<code>depot_tools</code>加入环境变量<code>export PATH=&quot;$PATH:~/Flutter/depot_tools&quot;</code></p>
+</li>
+<li><p>2). 本地创建名为<code>engine</code>的文件夹，并在<code>engine</code>内创建<code>.gclient</code>文件，内容如下，将url改为自己的<code>engine</code>地址</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">  solutions = [&#123;</span><br><span class="line">  "managed": False,</span><br><span class="line">  "name": "src/flutter",</span><br><span class="line">  "url": "git@github.com:&lt;your_name_here&gt;/engine.git",</span><br><span class="line">  "custom_deps": &#123;&#125;,</span><br><span class="line">  "deps_file": "DEPS",</span><br><span class="line">  "safesync_url": "",</span><br><span class="line">&#125;,]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>3). 在<code>engine</code>目录内，执行<code>gclient sync</code>，获取<code>flutter</code>依赖的所有源码，此处比较耗时。 </p>
+<ul>
+<li>这一步很容易出现各种网络导致的错误。一般的解决办法是使用代理工具，并在<code>.bash_profile</code>中添加<code>export http_proxy=http://127.0.0.1:1087;</code>和<code>export https_proxy=http://127.0.0.1:1087</code>，然后<code>source ~/.bash_profile</code>，但是要记得代码同步完成以后要删除。更多网络方面的设置，可以参考<a href="https://fucknmb.com/2019/02/26/Flutter-Engine-%E7%BC%96%E8%AF%91%E6%8C%87%E5%8C%97/" target="_blank" rel="noopener">Flutter Engine 编译指北</a></li>
+</ul>
+</li>
+<li><p>4). 同步代码 <code>cd ~/Flutter/engine/src/flutter</code>，<code>git remote add upstream https://github.com/flutter/engine.git</code>，<code>git pull upstream master</code></p>
+</li>
+<li><p>5). 同步版本。</p>
+<ul>
+<li>执行<code>cat ~/Flutter/flutter/bin/internal/engine.version</code>可以查看当前使用的flutter的<code>engine</code>的<code>commit-id</code>。</li>
+<li>执行<code>cd ~/Flutter/engine/src/flutter</code>，切换到<code>engine/src/flutter</code>目录下。执行<code>git reset --hard commit-id</code>，回滚代码。</li>
+<li>查看当前版本<code>git rev-parse HEAD</code></li>
+<li>执行<code>gclient sync  --with_branch_heads --with_tags</code>，再次同步依赖的代码。</li>
+</ul>
+</li>
+<li><p>6). 编译</p>
+<ul>
+<li>在<code>engine/src</code>目录下执行<code>./flutter/tools/gn --ios --unoptimized &amp;&amp; ./flutter/tools/gn --unoptimized</code>。生成iOS未优化的debug版本工程。</li>
+<li>执行<code>ninja -C out/ios_debug_unopt &amp;&amp; ninja -C out/host_debug_unopt</code>，编译工程。</li>
+<li>或者使用<code>./flutter/tools/gn --ios --unoptimized --runtime-mode=release &amp;&amp; ./flutter/tools/gn --unoptimized --runtime-mode=release</code>，生成arm64未优化的release版本。</li>
+<li>执行<code>ninja -C out/ios_release_unopt &amp;&amp; ninja -C out/host_release_unopt</code>，编译工程。</li>
+</ul>
+</li>
+<li><p>7). 使用</p>
+<ul>
+<li>在flutter工程中，执行<code>flutter build ios --debug --local-engine-src-path ~/Flutter/engine/src/ --local-engine=ios_debug_unopt</code>，使用本地<code>engine</code>编译工程。</li>
+</ul>
+</li>
+<li><p>8). 运行</p>
+<ul>
+<li>使用xcode编译运行，即可使用本地的<code>engine</code>。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>常见问题</p>
+<ul>
+<li>1). 一般在<code>gclient sync</code>期间出现的问题，都是网络导致的，解决的办法是使用网络代理，并在<code>.bash_profile</code>中添加<code>http_proxy和https_proxy</code>。请参考<a href="https://fucknmb.com/2019/02/26/Flutter-Engine-%E7%BC%96%E8%AF%91%E6%8C%87%E5%8C%97/" target="_blank" rel="noopener">Flutter Engine 编译指北</a></li>
+</ul>
+</li>
+</ol>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/09/30/Flutter Engine资料/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/09/30/Flutter Engine资料/&text=Flutter Engine 资料"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/09/30/Flutter Engine资料/&title=Flutter Engine 资料"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/09/30/Flutter Engine资料/&is_video=false&description=Flutter Engine 资料"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Flutter Engine 资料&body=Check out this article: http://yoursite.com/2019/09/30/Flutter Engine资料/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/09/30/Flutter Engine资料/&title=Flutter Engine 资料"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/09/30/Flutter Engine资料/&title=Flutter Engine 资料"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/09/30/Flutter Engine资料/&title=Flutter Engine 资料"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/09/30/Flutter Engine资料/&title=Flutter Engine 资料"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/09/30/Flutter Engine资料/&name=Flutter Engine 资料&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2019 jeelun
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+    <!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<!-- clipboard -->
+
+  <script src="/lib/clipboard/clipboard.min.js"></script>
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight .code pre").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      target: function(trigger) {
+        return trigger.nextElementSibling;
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+<script src="/js/main.js"></script>
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>
