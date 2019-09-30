@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang=en>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="背景常规的SDK开发流程是用Xcode新建工程，写代码，然后执行Build，即可生成Framework。这样的开发流程有下面几个弊端：  一次打包无法生成同时支持arm架构和x86的Framework。需要先选择Generic iOS Device生成arm架构的Framework，在选择模拟器，生成x86架构的Framework。然后利用lipo命令将2个Framework合并成一个。 使用不方">
+<meta property="og:type" content="article">
+<meta property="og:title" content="利用Pod管理静态库">
+<meta property="og:url" content="http://yoursite.com/2019/09/29/cocoapods_usage/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="背景常规的SDK开发流程是用Xcode新建工程，写代码，然后执行Build，即可生成Framework。这样的开发流程有下面几个弊端：  一次打包无法生成同时支持arm架构和x86的Framework。需要先选择Generic iOS Device生成arm架构的Framework，在选择模拟器，生成x86架构的Framework。然后利用lipo命令将2个Framework合并成一个。 使用不方">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://yoursite.com/2019/09/29/cocoapods_usage/pod_lib_create@2x.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/29/cocoapods_usage/create_file@2x.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/29/cocoapods_usage/init_dir@2x.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/29/cocoapods_usage/union_pay@2x.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/29/cocoapods_usage/pod_package@2x.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/29/cocoapods_usage/output@2x.png">
+<meta property="og:updated_time" content="2019-09-30T05:13:13.977Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="利用Pod管理静态库">
+<meta name="twitter:description" content="背景常规的SDK开发流程是用Xcode新建工程，写代码，然后执行Build，即可生成Framework。这样的开发流程有下面几个弊端：  一次打包无法生成同时支持arm架构和x86的Framework。需要先选择Generic iOS Device生成arm架构的Framework，在选择模拟器，生成x86架构的Framework。然后利用lipo命令将2个Framework合并成一个。 使用不方">
+<meta name="twitter:image" content="http://yoursite.com/2019/09/29/cocoapods_usage/pod_lib_create@2x.png">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>利用Pod管理静态库</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- persian styles -->
+    
+      <link rel="stylesheet" href="/css/rtl.css">
+    
+    <!-- rss -->
+    
+    
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/09/29/cocoapods_usage/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/09/29/cocoapods_usage/&text=利用Pod管理静态库"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/09/29/cocoapods_usage/&title=利用Pod管理静态库"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/09/29/cocoapods_usage/&is_video=false&description=利用Pod管理静态库"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=利用Pod管理静态库&body=Check out this article: http://yoursite.com/2019/09/29/cocoapods_usage/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/09/29/cocoapods_usage/&title=利用Pod管理静态库"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/09/29/cocoapods_usage/&title=利用Pod管理静态库"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/09/29/cocoapods_usage/&title=利用Pod管理静态库"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/09/29/cocoapods_usage/&title=利用Pod管理静态库"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/09/29/cocoapods_usage/&name=利用Pod管理静态库&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#背景"><span class="toc-number">1.</span> <span class="toc-text">背景</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#开发"><span class="toc-number">2.</span> <span class="toc-text">开发</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#打包"><span class="toc-number">3.</span> <span class="toc-text">打包</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#使用"><span class="toc-number">4.</span> <span class="toc-text">使用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#发布到仓库"><span class="toc-number">5.</span> <span class="toc-text">发布到仓库</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        利用Pod管理静态库
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name"></span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2019-09-29T09:16:02.182Z" itemprop="datePublished">2019-09-29</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h4 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h4><p>常规的SDK开发流程是用Xcode新建工程，写代码，然后执行Build，即可生成Framework。这样的开发流程有下面几个弊端：</p>
+<ol>
+<li>一次打包无法生成同时支持arm架构和x86的Framework。需要先选择<code>Generic iOS Device</code>生成arm架构的Framework，在选择模拟器，生成x86架构的Framework。然后利用lipo命令将2个Framework合并成一个。</li>
+<li>使用不方便。如果Framework还依赖了其他的静态库，那么在提供Framework的时候，还需要同时提供依赖的静态库。因为在构建Framework的时候是不会把依赖的静态库打包进去的。<br>利用cocoapods上面的这些问题可以得到很好的解决，SDK的开发和使用会变得如丝般顺滑。</li>
+</ol>
+<h4 id="开发"><a href="#开发" class="headerlink" title="开发"></a>开发</h4><p>首先，来看下如何利用cocoapods建立一个Framework工程。</p>
+<p>执行<code>pod lib create MyFramework</code>，并根据提示进行选择，完成工程创建。<br><img src="/2019/09/29/cocoapods_usage/pod_lib_create@2x.png" alt="pod lib create"><br>创建完成之后，会自动打开工程。下图是工程目录文件结构：<br><img src="/2019/09/29/cocoapods_usage/create_file@2x.png" alt="create_file"><br>再来看下在Finder中的文件结构：<br><img src="/2019/09/29/cocoapods_usage/init_dir@2x.png" alt="init_dir"><br>Example下是Demo工程，MyFramework下是源码文件，还有个比较重要的文件是MyFramework.podspec。Demo工程执行<code>pod install</code>的时候，会根据这个文件里面的配置查找源码、静态库、及其他的配置信息。<br>特别需要注意的是<code>s.version</code>字段，后面打包的时候，<strong>需要保证在远程分支有对应的tag</strong>。<br>详细说明可以查看官方文档<a href="http://guides.cocoapods.org/syntax/podspec.html" target="_blank" rel="noopener">Podspec Syntax Reference</a>。</p>
+<p>介绍完工程目录后，就进入实际的开发了。首先将自动生成的ReplaceMe.m文件删除，并创建自己的类文件MyClass，将MyClass.m改为MyClass.mm（后面引入的静态库需要）。注意创建的时候，类要放在Classes目录下。下面我们使用银联的SDK作为测试依赖的静态库。首先，将银联静态库文件放在如下目录中：<br><img src="/2019/09/29/cocoapods_usage/union_pay@2x.png" alt="union_pay"></p>
+<p>并在MyFramework.podspec文件中添加如下命令：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 银联云闪付</span></span><br><span class="line">s.subspec <span class="string">'UnionPay'</span> <span class="keyword">do</span> <span class="params">|sss|</span></span><br><span class="line">    sss.source_files = <span class="string">'MyFramework/Classes/ThirdParty/Libraries/UnionPay/**/*.&#123;h&#125;'</span></span><br><span class="line">    sss.vendored_libraries = <span class="string">'MyFramework/Classes/ThirdParty/Libraries/UnionPay/**/*.a'</span></span><br><span class="line">    sss.private_header_files = <span class="string">'MyFramework/Classes/ThirdParty/Libraries/UnionPay/**/*.h'</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<p>完整配置如下：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">Pod::Spec.new <span class="keyword">do</span> <span class="params">|s|</span></span><br><span class="line">  s.name             = <span class="string">'MyFramework'</span></span><br><span class="line">  s.version          = <span class="string">'0.1.0'</span></span><br><span class="line">  s.summary          = <span class="string">'A short description of MyFramework.'</span></span><br><span class="line"></span><br><span class="line">  s.description      = &lt;&lt;-DESC </span><br><span class="line"><span class="symbol">TODO:</span> Add long description of the pod here.</span><br><span class="line">                       DESC</span><br><span class="line"></span><br><span class="line">  s.homepage         = <span class="string">'https://github.com/jeelun/MyFramework'</span></span><br><span class="line">  s.license          = &#123; <span class="symbol">:type</span> =&gt; <span class="string">'MIT'</span>, <span class="symbol">:file</span> =&gt; <span class="string">'LICENSE'</span> &#125;</span><br><span class="line">  s.author           = &#123; <span class="string">'xxx'</span> =&gt; <span class="string">'xxx@xxx.com'</span> &#125;</span><br><span class="line">  s.source           = &#123; <span class="symbol">:git</span> =&gt; <span class="string">'https://github.com/xxx/MyFramework.git'</span>, <span class="symbol">:tag</span> =&gt; s.version.to_s &#125;</span><br><span class="line"></span><br><span class="line">  s.ios.deployment_target = <span class="string">'8.0'</span></span><br><span class="line"></span><br><span class="line">  </span><br><span class="line">  s.libraries     = <span class="string">'z'</span>, <span class="string">'c++'</span></span><br><span class="line"></span><br><span class="line">  s.subspec <span class="string">'Core'</span> <span class="keyword">do</span> <span class="params">|sss|</span></span><br><span class="line">      sss.source_files = <span class="string">'MyFramework/Classes/Sources/**/*'</span></span><br><span class="line">      sss.public_header_files = <span class="string">'MyFramework/Classes/Sources/**/*.h'</span></span><br><span class="line">      </span><br><span class="line">      sss.dependency <span class="string">'MyFramework/UnionPay'</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment"># 银联云闪付</span></span><br><span class="line">  s.subspec <span class="string">'UnionPay'</span> <span class="keyword">do</span> <span class="params">|sss|</span></span><br><span class="line">      sss.source_files = <span class="string">'MyFramework/Classes/ThirdParty/Libraries/UnionPay/**/*.&#123;h&#125;'</span></span><br><span class="line">      sss.vendored_libraries = <span class="string">'MyFramework/Classes/ThirdParty/Libraries/UnionPay/**/*.a'</span></span><br><span class="line">      sss.private_header_files = <span class="string">'MyFramework/Classes/ThirdParty/Libraries/UnionPay/**/*.h'</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line">  </span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<p>进入Example目录，执行<code>pod update</code>，更新工程配置。此时，依赖的静态库即被引入了工程中。在MyClass中增加<code>sayHello</code>的方法，并调用银联静态库的相关方法：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"MyClass.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"UPPaymentControl.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyClass</span></span></span><br><span class="line"></span><br><span class="line">+(<span class="keyword">void</span>) sayHello &#123;</span><br><span class="line">    <span class="keyword">id</span> obj = [UPPaymentControl defaultControl];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"hello, myClass, obj:%@"</span>, obj);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<p>编译一下，没问题的话，就表示SDK开发完成。下面来看下如何打包SDK。</p>
+<h4 id="打包"><a href="#打包" class="headerlink" title="打包"></a>打包</h4><p>在打包之前，我们先将代码push到远程分支，并创建tag，tag需要与MyFramework.podspec中的<code>s.version</code>保持一致。<br>完成之后，调用<code>pod package</code>打包Framework。<br>进入Example的上级目录，执行下面的命令：</p>
+<p><code>pod package MyFramework.podspec --force --verbose --no-mangle --exclude-deps</code></p>
+<p>如果没有报错的话，会在当前目录下生成产物文件夹:<br><img src="/2019/09/29/cocoapods_usage/pod_package@2x.png" alt="pod_package"></p>
+<p>Framework在ios目录下。打出来的Framework默认是支持arm架构和x86架构的。新建一个文件夹output，将Framework和依赖的银联SDK放在改目录下，并将工程中的LICENSE也拷贝到里面。<br>新建一个文件 MyFramework-SDK.podspec。将如下内容拷贝到文件中：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">Pod::Spec.new <span class="keyword">do</span> <span class="params">|s|</span></span><br><span class="line">  s.name = <span class="string">"MyFramework"</span></span><br><span class="line">  s.version = <span class="string">"0.0.1"</span></span><br><span class="line">  s.summary = <span class="string">"MyFramework"</span></span><br><span class="line">  s.license = &#123;<span class="string">"type"</span>=&gt;<span class="string">"MIT"</span>, <span class="string">"file"</span>=&gt;<span class="string">"LICENSE"</span>&#125;</span><br><span class="line">  s.authors = &#123;<span class="string">"xxx"</span>=&gt;<span class="string">"xxx@xx.com"</span>&#125;</span><br><span class="line">  s.homepage = <span class="string">"https://www.google.com/"</span></span><br><span class="line">  s.description = <span class="string">"MyFramework"</span></span><br><span class="line">  s.ios.deployment_target = <span class="string">'8.0'</span></span><br><span class="line">  s.platform = <span class="symbol">:ios</span>, <span class="string">'8.0'</span></span><br><span class="line">  s.source = &#123; <span class="symbol">:http</span> =&gt; <span class="string">'file:'</span> + __dir_<span class="number">_</span> + <span class="string">'/MyFramework.zip'</span> &#125;</span><br><span class="line"> </span><br><span class="line">  s.libraries     = <span class="string">'z'</span>, <span class="string">'c++'</span></span><br><span class="line"> </span><br><span class="line">  s.subspec <span class="string">'Core'</span> <span class="keyword">do</span> <span class="params">|ss|</span></span><br><span class="line">    ss.vendored_frameworks = <span class="string">"MyFramework.framework"</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"> </span><br><span class="line">   s.subspec <span class="string">'UnionPay'</span> <span class="keyword">do</span> <span class="params">|sss|</span></span><br><span class="line">          sss.source_files = <span class="string">'UnionPay/**/*.&#123;h&#125;'</span></span><br><span class="line">          sss.vendored_libraries = <span class="string">'UnionPay/**/*.a'</span></span><br><span class="line">          sss.public_header_files = <span class="string">'UnionPay/**/*.h'</span></span><br><span class="line">   <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<p>将LICENSE、Framework和UnionPay压缩为<code>MyFramework.zip</code>文件。压缩完成之后，删除这3个文件。到这一步，SDK的制作就大功告成了。<br><img src="/2019/09/29/cocoapods_usage/output@2x.png" alt="pod_package"><br>使用的时候，只需要提供 MyFramework-SDK.podspec和zip文件。</p>
+<p>打包这个环节可以用脚本实现自动化，将podspec文件和zip包的生成通过一行命令完成。</p>
+<h4 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h4><p>新建测试工程MyApp。在Podfile中增加如下依赖:</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod <span class="string">'MyFramework'</span>, <span class="symbol">:podspec=&gt;<span class="string">'output/MyFramework-SDK.podspec'</span></span></span><br></pre></td></tr></table></figure>
+
+<p>执行<code>pod install</code>，即完成对SDK的引用。</p>
+<h4 id="发布到仓库"><a href="#发布到仓库" class="headerlink" title="发布到仓库"></a>发布到仓库</h4><p>利用<code>pod repo push</code>命令可以将<code>MyFramework-SDK.podspec</code>文件push到远程仓库，相应的，也需要将zip文件放置在远程，并修改<code>MyFramework-SDK.podspec</code>中的<code>s.source</code>字段。<br>此时，再使用的时候，就不需要将output目录放置在工程中了，只需要在Podfile中添加依赖，即可使用。可参考支付宝SDK的<a href="https://github.com/CocoaPods/Specs/blob/master/Specs/7/c/2/AlipaySDK-iOS/15.5.9/AlipaySDK-iOS.podspec.json" target="_blank" rel="noopener">podspec</a>。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#背景"><span class="toc-number">1.</span> <span class="toc-text">背景</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#开发"><span class="toc-number">2.</span> <span class="toc-text">开发</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#打包"><span class="toc-number">3.</span> <span class="toc-text">打包</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#使用"><span class="toc-number">4.</span> <span class="toc-text">使用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#发布到仓库"><span class="toc-number">5.</span> <span class="toc-text">发布到仓库</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/09/29/cocoapods_usage/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/09/29/cocoapods_usage/&text=利用Pod管理静态库"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/09/29/cocoapods_usage/&title=利用Pod管理静态库"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/09/29/cocoapods_usage/&is_video=false&description=利用Pod管理静态库"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=利用Pod管理静态库&body=Check out this article: http://yoursite.com/2019/09/29/cocoapods_usage/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/09/29/cocoapods_usage/&title=利用Pod管理静态库"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/09/29/cocoapods_usage/&title=利用Pod管理静态库"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/09/29/cocoapods_usage/&title=利用Pod管理静态库"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/09/29/cocoapods_usage/&title=利用Pod管理静态库"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/09/29/cocoapods_usage/&name=利用Pod管理静态库&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2019 jeelun
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+    <!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<!-- clipboard -->
+
+  <script src="/lib/clipboard/clipboard.min.js"></script>
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight .code pre").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      target: function(trigger) {
+        return trigger.nextElementSibling;
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+<script src="/js/main.js"></script>
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>
