@@ -1,0 +1,289 @@
+---
+layout: post
+title:  bash脚本学习
+date:   2019-08-18 10:54:23 +0800
+categories: 技术
+---
+
+#### 命令行参数
+
+./argv.sh aa bb cc dd ee ff 
+
+```bash
+$0            #./argv.sh  相当于c语言main函数的argv[0]
+$1/$2/$3...   #aa bb cc ... 相当于c语言main函数的argv[1]、argv[2]、argv[3]...
+$#            #6  相当于c语言main函数的argc - 1
+$@            #表示参数列表$1/$2... 例如可以用在for循环中的in后面
+$*            #同上
+$?            #上一条命令的exit status
+$$            #当前进程号
+shift         #左移命令， `shift 3`表示原来$4变成了$1
+```
+
+#### 管道
+
+```bash
+|       cat myfile | more   
+awk     df -k | awk(按列拆分) '{print $1}' | grep -v 
+tee     把结果输出到标准输出，另一个副本输出到相应文件     
+```
+
+#### 文件重定向
+```bash
+cmd > file  # 标准输出重定向到新文件中
+cmd >> file # 追加
+cmd > file 2>&1 # 标准出错重定向到file中
+cmd >> file 2>&1
+
+```
+
+#### 函数
+没有返回值和参数列表
+```bash
+foo() {
+    echo "function foo is called"
+}
+echo "-=start=-"
+foo
+echo "-=end=-"
+
+
+func() {
+    for TEST in $@; do
+        ls -ld $TEST
+    done
+}
+func $@
+```
+函数传参： 函数名 参数1 参数2 参数3... 参数N
+
+
+#### 脚本调试
+
+```bash
+-n #读一遍命令，但是不执行
+-v 
+-x #将执行的每一条命令和执行结果打印出来
+```
+
+#### 正则表达式
+##### 基本语法
+1. 字符串
+```bash
+.   匹配任意一个字符            abc. 可以匹配abcd、abc9等
+*   匹配多个字符
+[]  匹配括号中的任意一个         [abc]d可以匹配ad、bd或者cd
+-   在[]中表示字符范围          [0-9a-fA-F]可以匹配一位16进制数字
+^   位于[]内的开头，匹配出括号中的字符串外的任意一个字符     [^xy]匹配除xy之外的任意一个字符
+[[:xxx:]] grep工具预定义的一些命名字符类         [[:alpha:]]匹配一个字母，[[:digit:]]匹配一个数字
+```
+2. 数量限定符
+```bash
+?       紧跟在它前面的单元应该匹配0次或者1次         [0-9]?\.[0-9]匹配0.0 2.3 .4等
++       紧跟在它前面的单元应该匹配1次或者多次         [a-zA-Z0-9_.-]+@[a-zA-Z0-9_.-]+\.[a-zA-Z0-9_.-]+匹配email地址
+*       紧跟在它前面的单元应该匹配0次或者多次         [0-9][0-9]*匹配至少一个数字，等价于[0-9]+
+{N}     紧跟在它前面的单元应该精确匹配N次            [1-9][0-9]{2}匹配从100到999的整数
+{N,}    紧跟在它前面的单元应该至少匹配N次            [1-9][0-9]{2,}匹配三位以上（包含三位）的整数
+{,M}    紧跟在它前面的单元应该匹配最多M次            [0-9]{,1}相当于[0-9]?
+{N,M}   紧跟在它前面的单元应该匹配至少N次，最多M次     [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}匹配ip地址
+```
+3. 位置限定符
+```bash
+^       匹配行首的位置             ^Content匹配位于一行开头的Content
+$       匹配行末的位置             ;$匹配位于一行结尾的;号，^$匹配空行
+\<      匹配单词开头的位置          \<th匹配 ... this，但不匹配ethernet、tenth
+\>      匹配单词结尾的位置          p\>匹配leap ...,但不匹配parent、sleepy
+\b      匹配单词开头或者结尾的位置   \bat\b匹配 ... at ...，但不匹配cat、atexit
+\B      匹配非单词开头和结尾的位置   \Bat\B 匹配battery, 但不匹配 ... attend、hat
+```
+4. 其他特殊字符
+```bash
+\       转义
+()      将正在表达式的一部分括起来组成一个单元，可以对整个单元使用数量限定符      ([0-9]{1,3}\.){3}[0-9]{1-3}匹配ip地址
+|       连接2个子表达式，表示或的关系                 n(o|either) 匹配no或者neither
+```
+
+#### grep
+```bash
+-c 只输出匹配行的计数
+-i 不区分大小写
+-h 查询多文件时不显示文件名
+-n 查询结果显示行号
+#递归查询文件内容
+grep -r '8.8.8.8' ./ 
+```
+#### shell语法
+1. 字符串
+    - 变量：
+        - 环境变量
+        - 局部变量
+    - 对比：
+        - $变量名      取变量值
+        - $[变量名]    取变量值（更安全）
+        - $(命令)      取命令执行结果 等同于``
+        - $(())       对变量执行算术运算 等同于$[]
+    - 导出：export
+    - 删除：unset
+    - 命令代换：$()  == ``  VAR=`date`
+    - 算术代换：$(())  == $[] 
+    - 转义字符：\ 
+    - 单引号：括字符串 不能展开变量
+    - 双引号：括字符串 可以展开变量  建议，在取变量值时，都加""，尤其是在条件测试中
+2. 控制语句 if、else、switch case、for、while
+    - 条件判别：真0，假1
+    - test 测试条件   [ 测试条件 ]
+    - 整数判别符：
+    ```bash
+    -eq #等于
+    -ne #不等于
+    -gt #大于
+    -lt #小于
+    -ge #大于等于
+    -le #小于等于
+    ```
+    - 文件类型判别符：
+    ```bash
+    -d 目录文件
+    -f 普通文件
+    -p 管道
+    -l 软连接
+    -c 字符设备
+    -b 块设备
+    -s socket
+    ```
+    - 字符串长度判断：
+    ```bash
+    -z #空字符串(长度0)
+    -n #非空字符(长度非0)
+    ```
+    - 字符串判等：
+    ```bash
+    = #相等
+    != #不相等
+    ```
+    - 逻辑运算:
+    ```bash
+    -a #逻辑与  短路运算
+    -o #逻辑或
+    ! #逻辑非
+    ```
+    - if语句
+    ```bash
+    if [ 判别条件 ]; then
+        # 执行语句
+    elif [ 判别条件 ]; then
+        # 执行语句
+    else
+        # 执行条件
+    fi
+    ```
+    - case语句
+    ```bash
+    case 变量 in
+        条件1.1|条件1.2|条件1.N)
+            # 执行语句
+            ;;
+        条件2.1|条件2.2|条件2.N)
+            # 执行语句
+            ;;
+    esac
+    ```
+    - for语句
+    ```bash
+    for 变量 in 集合; do
+        # 执行语句
+    done
+
+    for TEST in `ls`; do
+        ls -l TEST
+    done
+    ```
+    - while语句
+    ```bash
+    #!/bin/bash
+    count=1
+    read passwd
+    while [ passwd != 'security' -a $count -lt 3 ]; do
+        echo "Try again"
+        count=$[count+1]
+        read passwd
+    done
+    ```
+    - 函数
+    ```bash
+    func () {
+        # 函数体
+    }
+                       $1   $2   $3        $N
+    调用函数传参： 函数名 参数1 参数2 参数3 ... 参数N
+    函数外： $0 表示argv[0] shell脚本名称; $1-$N 表示命令行参数的argv[1]-argv[N]
+    函数内：$0 表示argv[0] shell脚本名称; $1-$N 表示函数参数1-N
+    ```
+
+
+#### find 找文件
+
+不能和管道一起使用
+
+-name
+```bash
+find ./ -name "???init"
+find ./ -name "*init"
+
+```
+-size
+```bash
+find ./ -size +2k -size -5k
+find ./ -size +3m -size -8m
+```
+-type # 按照类型搜索
+```bash
+find ./ -type f #所有文件 默认是递归
+find ./ -type d # 目录
+```
+-maxdepth # 搜索深度
+```bash
+find ./ -maxdepth 1 -type f #只搜索当前目录
+find ./ -size +2k -type f  
+```
+-exec # 搜到之后执行
+```bash
+find ./ -type f -size +3k -exec ls -l {} \;
+```
+-ok # 询问 交互版的 -exec
+```bash
+find ./ -maxdepth 2 -type d -ok rm -rf {} \; 
+```
+-xargs # 分批处理 跟管道一起使用
+```bash
+find ./ -maxdepth 1 -type d | xargs ls -ldh
+```
+-print # 
+```bash
+find ./ -type f -print0 | xargs -0 ls -ldh
+```
+-atime/ctime/mtime 天为单位 
+```bash
+
+```
+-amin/cmin/mmin 分钟为单位
+
+#### sed
+stream editor 流编辑器
+1. [sed命令详解](https://www.jianshu.com/p/89163e927a2c)
+2. [sed命令详解](https://www.cnblogs.com/edwardlost/archive/2010/09/17/1829145.html)
+3. [command a expects \ followed by text](https://blog.csdn.net/ghostyusheng/article/details/86484884)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
